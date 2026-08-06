@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #030712;
+  --card: #111827;
+  --border: #1f2937;
+  --primary: #2563eb;
+  --accent: #06b6d4;
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  background: var(--bg);
+  color: white;
+  font-family: Inter, sans-serif;
+}
+
+html{
+scroll-behavior:smooth;
+}

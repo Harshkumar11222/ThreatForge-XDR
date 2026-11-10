@@ -1,5 +1,5 @@
-from sqlalchemy import Column, Integer, String
 
+from sqlalchemy import Column, Integer, String
 from app.database import Base
 
 
@@ -10,6 +10,8 @@ class User(Base):
 
     name = Column(String, nullable=False)
 
-    email = Column(String, unique=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
 
     hashed_password = Column(String, nullable=False)
+
+    google_sub = Column(String, unique=True, nullable=True)

@@ -7,21 +7,46 @@ from app.database import Base
 class Alert(Base):
     __tablename__ = "alerts"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True,
+    )
 
-    threat = Column(String(150), nullable=False)
+    threat = Column(
+        String(150),
+        nullable=False,
+    )
 
-    severity = Column(String(50), nullable=False)
+    severity = Column(
+        String(50),
+        nullable=False,
+    )
 
-    risk_score = Column(Integer, default=0)
+    risk_score = Column(
+        Integer,
+        default=0,
+    )
 
-    file_name = Column(String(255))
+    file_name = Column(
+        String(255),
+        nullable=True,
+    )
 
-    file_path = Column(String(500))
+    file_path = Column(
+        String(500),
+        nullable=True,
+    )
 
-    source = Column(String(100), default="Real-Time Scanner")
+    source = Column(
+        String(100),
+        default="Real-Time Scanner",
+    )
 
-    status = Column(String(50), default="Active")
+    status = Column(
+        String(50),
+        default="Active",
+    )
 
     created_at = Column(
         DateTime(timezone=True),

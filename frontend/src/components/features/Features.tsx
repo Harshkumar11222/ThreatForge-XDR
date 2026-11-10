@@ -1,3 +1,4 @@
+
 import Container from "../ui/Container";
 import SectionTitle from "../ui/SectionTitle";
 import FeatureCard from "./FeatureCard";
@@ -52,28 +53,32 @@ const features = [
 
 export default function Features() {
   return (
-    <section className="py-32">
+    <section
+      id="features"
+      className="relative overflow-hidden bg-[#0b1f1f] py-12 text-white lg:py-16"
+    >
+      {/* Background Glow */}
+      <div className="pointer-events-none absolute left-1/2 top-20 -z-0 h-96 w-96 -translate-x-1/2 rounded-full bg-teal-400/5 blur-[120px]" />
+
       <Container>
+        <div className="relative z-10">
+          <SectionTitle
+            badge="Platform Features"
+            title="Everything You Need To Defend Your Organization"
+            subtitle="ThreatForge combines AI, automation and threat intelligence into one powerful cybersecurity platform."
+          />
 
-        <SectionTitle
-          badge="Platform Features"
-          title="Everything You Need To Defend Your Organization"
-          subtitle="ThreatForge combines AI, automation and threat intelligence into one powerful cybersecurity platform."
-        />
-
-        <div className="mt-20 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-
-          {features.map((feature) => (
-            <FeatureCard
-              key={feature.title}
-              {...feature}
-            />
-          ))}
-
+          {/* Feature Cards */}
+          <div className="mt-10 grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+            {features.map((feature) => (
+              <FeatureCard
+                key={feature.title}
+                {...feature}
+              />
+            ))}
+          </div>
         </div>
-
       </Container>
-      <section id="dashboard"></section>
     </section>
   );
 }

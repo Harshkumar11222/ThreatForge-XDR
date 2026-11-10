@@ -1,3 +1,4 @@
+
 import Container from "../ui/Container";
 import SectionTitle from "../ui/SectionTitle";
 import TestimonialCard from "./TestimonialCard";
@@ -25,26 +26,23 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="py-32">
+    <section className="relative overflow-hidden bg-[#0b1f1f] py-12 text-white lg:py-16">
+      <div className="pointer-events-none absolute left-1/2 top-20 -z-0 h-96 w-96 -translate-x-1/2 rounded-full bg-teal-400/5 blur-[120px]" />
+
       <Container>
+        <div className="relative z-10">
+          <SectionTitle
+            badge="Testimonials"
+            title="What Security Professionals Think"
+            subtitle="Illustrative demo testimonials showcasing the intended user experience."
+          />
 
-        <SectionTitle
-          badge="Testimonials"
-          title="What Security Professionals Think"
-          subtitle="Illustrative demo testimonials showcasing the intended user experience."
-        />
-
-        <div className="mt-16 grid gap-8 lg:grid-cols-3">
-
-          {testimonials.map((item) => (
-            <TestimonialCard
-              key={item.name}
-              {...item}
-            />
-          ))}
-
+          <div className="mt-8 grid gap-8 lg:grid-cols-3">
+            {testimonials.map((item) => (
+              <TestimonialCard key={item.name} {...item} />
+            ))}
+          </div>
         </div>
-
       </Container>
     </section>
   );

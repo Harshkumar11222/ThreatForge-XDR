@@ -1,0 +1,45 @@
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+venv/
+venv313/
+__pycache__/
+*.py[cod]
+*.pyd
+.pytest_cache/
+
+# Databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Node
+node_modules/
+dist/
+.vite/
+
+# Upload storage
+backend/storage/
+backend/uploads/
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+
+# Never commit quarantined files
+backend/quarantine/
+
+# TypeScript build cache
+*.tsbuildinfo

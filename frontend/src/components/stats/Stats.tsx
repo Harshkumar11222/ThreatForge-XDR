@@ -24,9 +24,7 @@ export default function Stats() {
   return (
     <section className="py-24">
       <Container>
-
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-
           {stats.map((item) => (
             <StatsCard
               key={item.label}
@@ -34,9 +32,7 @@ export default function Stats() {
               label={item.label}
             />
           ))}
-
         </div>
-
       </Container>
     </section>
   );

@@ -12,9 +12,22 @@ export default function TestimonialCard({
   quote,
 }: TestimonialCardProps) {
   return (
-    <div className="rounded-3xl border border-slate-800 bg-[#111827]/80 p-8 hover:border-cyan-500 transition-all duration-300">
-
-      <div className="flex gap-1 text-yellow-400">
+    <div
+      className="
+        group rounded-3xl
+        border border-cyan-300/10
+        bg-[#113333]
+        p-8
+        transition-all duration-300
+        hover:-translate-y-2
+        hover:border-teal-300/30
+        hover:bg-[#123a38]
+        hover:shadow-xl
+        hover:shadow-teal-400/10
+      "
+    >
+      {/* Stars */}
+      <div className="flex gap-1 text-amber-300">
         <Star size={18} fill="currentColor" />
         <Star size={18} fill="currentColor" />
         <Star size={18} fill="currentColor" />
@@ -22,20 +35,21 @@ export default function TestimonialCard({
         <Star size={18} fill="currentColor" />
       </div>
 
-      <p className="mt-6 text-slate-300 leading-7">
+      {/* Quote */}
+      <p className="mt-6 leading-7 text-slate-300">
         "{quote}"
       </p>
 
+      {/* User */}
       <div className="mt-8">
-        <h3 className="font-semibold text-white">
+        <h3 className="font-semibold text-white transition-colors group-hover:text-teal-200">
           {name}
         </h3>
 
-        <p className="text-slate-400 text-sm">
+        <p className="mt-1 text-sm text-teal-300/80">
           {role}
         </p>
       </div>
-
     </div>
   );
 }

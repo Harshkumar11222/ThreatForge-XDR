@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import Home from "../pages/landing/Home";
 import Features from "../pages/landing/Features";
@@ -16,12 +16,14 @@ import Alerts from "../pages/dashboard/Alerts";
 import Analytics from "../pages/dashboard/Analytics";
 import Reports from "../pages/dashboard/Reports";
 import Settings from "../pages/dashboard/Settings";
+import Scanner from "../pages/dashboard/Scanner";
+import DashboardLayout from "../layouts/DashboardLayout";
+import ProtectedRoute from "./ProtectedRoute";
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Landing */}
         <Route path="/" element={<Home />} />
         <Route path="/features" element={<Features />} />
         <Route path="/pricing" element={<Pricing />} />
@@ -29,17 +31,20 @@ export default function AppRouter() {
         <Route path="/contact" element={<Contact />} />
         <Route path="/docs" element={<Docs />} />
 
-        {/* Authentication */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* Dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/alerts" element={<Alerts />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/scanner" element={<Scanner />} />
+          <Route path="/alerts" element={<Alerts />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/settings" element={<Settings />} />
+        </Route>
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,3 +1,4 @@
+
 import Container from "../ui/Container";
 import SectionTitle from "../ui/SectionTitle";
 import FAQItem from "./FAQItem";
@@ -22,18 +23,26 @@ const faqs = [
 
 export default function FAQ() {
   return (
-    <section className="py-32">
-      <Container>
-        <SectionTitle
-          badge="FAQ"
-          title="Frequently Asked Questions"
-          subtitle="Everything you need to know about ThreatForge."
-        />
+    <section
+      id="faq"
+      className="relative overflow-hidden bg-[#0b1f1f] py-12 text-white lg:py-16"
+    >
+      {/* Background Glow */}
+      <div className="pointer-events-none absolute left-1/2 top-20 -z-0 h-96 w-96 -translate-x-1/2 rounded-full bg-teal-400/5 blur-[120px]" />
 
-        <div className="mt-16 space-y-6">
-          {faqs.map((faq) => (
-            <FAQItem key={faq.question} {...faq} />
-          ))}
+      <Container>
+        <div className="relative z-10">
+          <SectionTitle
+            badge="FAQ"
+            title="Frequently Asked Questions"
+            subtitle="Everything you need to know about ThreatForge."
+          />
+
+          <div className="mt-8 space-y-4">
+            {faqs.map((faq) => (
+              <FAQItem key={faq.question} {...faq} />
+            ))}
+          </div>
         </div>
       </Container>
     </section>

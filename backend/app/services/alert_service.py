@@ -1,33 +1,19 @@
 from sqlalchemy.orm import Session
+from app.models.alert import Alert  # Quarantine model yahan se hata diya gaya hai
 
-from app.models.alert import Alert
-
-
-def save_alert(
-    db: Session,
-    threat: str,
-    severity: str,
-    risk_score: int,
-    file_name: str,
-    file_path: str,
-    source: str = "Real-Time Scanner",
-):
-    alert = Alert(
+def save_alert(db: Session, threat: str, severity: str, risk_score: int, file_name: str, file_path: str, source: str):
+    db_alert = Alert(
         threat=threat,
         severity=severity,
         risk_score=risk_score,
         file_name=file_name,
         file_path=file_path,
         source=source,
-        status="Active",
     )
-
-    db.add(alert)
+    db.add(db_alert)
     db.commit()
-    db.refresh(alert)
-
-    return alert
-
+    db.refresh(db_alert)
+    return db_alert
 
 def get_recent_alerts(db: Session, limit: int = 10):
     return (

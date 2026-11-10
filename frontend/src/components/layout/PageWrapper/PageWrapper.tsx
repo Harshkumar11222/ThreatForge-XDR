@@ -13,7 +13,7 @@ export default function PageWrapper({
   return (
     <main
       className={clsx(
-        "min-h-screen bg-[#030712] text-white overflow-x-hidden",
+        "min-h-screen w-full bg-[#0b1f1f] text-white overflow-x-hidden overflow-y-visible",
         className
       )}
     >

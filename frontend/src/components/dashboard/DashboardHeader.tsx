@@ -1,151 +1,180 @@
 import {
   ShieldCheck,
-  Bell,
-  Search,
   CalendarDays,
+  Play,
+  Loader2,
 } from "lucide-react";
-import { useNotifications } from "../../hooks/useNotifications";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { startScan } from "../../services/scanner";
+import { useNotifications } from "../../hooks/useNotifications";
 
-interface DashboardHeaderProps {
+interface Props {
   onScanComplete: () => void;
 }
 
-export default function DashboardHeader({
-  onScanComplete,
-}: DashboardHeaderProps) {
-
+export default function DashboardHeader({ onScanComplete }: Props) {
   const [scanning, setScanning] = useState(false);
   const { addNotification } = useNotifications();
-  const today = new Date().toLocaleDateString("en-US", {
+
+  const now = new Date();
+  const hour = now.getHours();
+
+  const greeting =
+    hour >= 5 && hour < 12
+      ? "Good morning"
+      : hour >= 12 && hour < 17
+      ? "Good afternoon"
+      : hour >= 17 && hour < 21
+      ? "Good evening"
+      : "Good night";
+
+  const today = now.toLocaleDateString("en-US", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 
-  const handleScan = async () => {
-  try {
-    setScanning(true);
+  async function handleScan() {
+    try {
+      setScanning(true);
 
-    const result = await startScan();
+      const result = await startScan();
 
-    toast.success(
-      `Scan Complete - ${result.total_threats} Threat(s) Found`
-    );
+      toast.success(
+        `Scan Complete - ${result.total_threats} Threat(s) Found`
+      );
 
-    // 🔔 Notification add
-    addNotification({
-      id: Date.now(),
-      title: "Scan Completed",
-      severity:
-        result.total_threats > 0 ? "High" : "Low",
-      ip: "Local System",
-      time: "Just now",
-      read: false,
-    });
+      addNotification({
+        id: Date.now(),
+        title: "Scan Completed",
+        severity: result.total_threats > 0 ? "High" : "Low",
+        ip: "Local System",
+        time: "Just now",
+        read: false,
+      });
 
-    // Dashboard refresh
-    onScanComplete();
-
-  } catch (error) {
-    console.error(error);
-
-    toast.error("Scan Failed");
-
-    addNotification({
-      id: Date.now(),
-      title: "Scan Failed",
-      severity: "Critical",
-      ip: "Local System",
-      time: "Just now",
-      read: false,
-    });
-
-  } finally {
-    setScanning(false);
+      onScanComplete();
+    } catch (e) {
+      console.error(e);
+      toast.error("Scan Failed");
+    } finally {
+      setScanning(false);
+    }
   }
-};
 
   return (
-    <div className="flex flex-col gap-6 border-b border-slate-800 pb-6 lg:flex-row lg:items-center lg:justify-between">
+    <section className="tf-grid relative overflow-hidden border-b border-cyan-300/10 px-7 py-8">
 
-      {/* Left */}
-      <div>
+      {/* Background Text */}
+      <div className="pointer-events-none absolute right-8 top-4 text-right opacity-40">
 
-        <p className="text-sm text-slate-400">
-          Welcome back 👋
-        </p>
+        <div className="text-[10px] font-medium tracking-[.3em] text-teal-300/70">
+          THREATFORGE XDR
+        </div>
 
-        <h1 className="mt-2 text-3xl font-bold text-white">
-          Security Operations Center
-        </h1>
+        <div className="mt-2 text-3xl font-bold text-teal-300/10">
+          DETECTION TODAY
+        </div>
 
-        <div className="mt-3 flex items-center gap-2 text-sm text-slate-400">
-          <CalendarDays size={16} />
-          {today}
+        <div className="text-3xl font-bold text-cyan-300/5">
+          PREVENTION TOMORROW
         </div>
 
       </div>
 
-      {/* Right */}
-      <div className="flex flex-wrap items-center gap-4">
+      {/* Header Content */}
+      <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-end">
 
-        {/* Search */}
-        <div className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-900 px-4 py-2">
+        {/* Greeting */}
+        <div>
 
-          <Search
-            size={18}
-            className="text-slate-400"
-          />
+          <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-[.2em] text-teal-300">
 
-          <input
-            type="text"
-            placeholder="Search..."
-            className="bg-transparent text-sm text-white outline-none placeholder:text-slate-500"
-          />
+            <span className="h-1.5 w-1.5 rounded-full bg-teal-400 shadow-lg shadow-teal-400/50" />
+
+            Security Operations Center
+
+          </div>
+
+          <h1 className="text-4xl font-bold tracking-wide text-white">
+
+            {greeting},{" "}
+
+            <span className="bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-transparent">
+              Harsh
+            </span>
+
+          </h1>
+
+          <p className="mt-2 text-sm text-slate-400">
+            Your system is protected and monitoring in real time.
+          </p>
+
+          {/* Date */}
+          <div className="mt-4 flex items-center gap-2 text-xs text-slate-500">
+            <CalendarDays
+              size={14}
+              className="text-teal-300/70"
+            />
+
+            {today}
+          </div>
 
         </div>
 
-        {/* Notification */}
-        <button className="relative flex h-11 w-11 items-center justify-center rounded-xl border border-slate-700 bg-slate-900 transition hover:border-cyan-400">
+        {/* Actions */}
+        <div className="flex items-center gap-3">
 
-          <Bell
-            size={20}
-            className="text-white"
-          />
+          {/* Secure Status */}
+          <div className="flex items-center gap-2 rounded-full border border-teal-300/15 bg-teal-400/5 px-4 py-2 text-xs font-bold text-teal-300">
 
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500"></span>
+            <ShieldCheck size={15} />
 
-        </button>
+            SYSTEM SECURE
 
-        {/* Scan Button */}
-        <button
-          onClick={handleScan}
-          disabled={scanning}
-          className="rounded-xl bg-cyan-600 px-5 py-2 font-semibold text-white transition hover:bg-cyan-500 disabled:opacity-50"
-        >
-          {scanning ? "Scanning..." : "Start Scan"}
-        </button>
+          </div>
 
-        {/* Status */}
-        <div className="flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-2">
+          {/* Scan */}
+          <button
+            onClick={handleScan}
+            disabled={scanning}
+            className="
+              flex items-center gap-2
+              rounded-xl
+              bg-teal-400
+              px-5 py-2.5
+              text-sm font-bold
+              text-[#062222]
+              shadow-lg shadow-teal-400/15
+              transition-all duration-300
+              hover:-translate-y-0.5
+              hover:bg-teal-300
+              hover:shadow-teal-400/25
+              disabled:cursor-not-allowed
+              disabled:opacity-60
+              disabled:hover:translate-y-0
+            "
+          >
 
-          <ShieldCheck
-            size={18}
-            className="text-emerald-400"
-          />
+            {scanning ? (
+              <Loader2
+                size={17}
+                className="animate-spin"
+              />
+            ) : (
+              <Play size={16} />
+            )}
 
-          <span className="text-sm font-medium text-emerald-400">
-            Protected
-          </span>
+            {scanning ? "Scanning..." : "Run Scan"}
+
+          </button>
 
         </div>
 
       </div>
 
-    </div>
+    </section>
   );
 }

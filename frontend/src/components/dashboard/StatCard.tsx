@@ -1,5 +1,8 @@
 import CountUp from "react-countup";
-import { ArrowUpRight, ArrowDownRight } from "lucide-react";
+import {
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 interface Props {
@@ -20,29 +23,52 @@ export default function StatCard({
   trend,
 }: Props) {
   return (
-    <div className="group rounded-3xl border border-slate-800 bg-slate-900/70 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500 hover:shadow-xl hover:shadow-cyan-500/10">
-
+    <div
+      className="
+        group
+        rounded-3xl
+        border border-teal-300/15
+        bg-[#16403d]
+        p-6
+        transition-all duration-300
+        hover:-translate-y-1
+        hover:border-teal-300/40
+        hover:bg-[#1a4945]
+        hover:shadow-xl
+        hover:shadow-teal-400/10
+      "
+    >
       <div className="flex items-center justify-between">
 
         <div>
-          <p className="text-sm text-slate-400">{title}</p>
+          <p className="text-sm font-medium text-slate-300">
+            {title}
+          </p>
 
-          <h2 className="mt-2 text-4xl font-bold text-white">
-
+          <h2 className="mt-2 bg-gradient-to-r from-teal-300 to-cyan-300 bg-clip-text text-4xl font-bold text-transparent">
             {typeof value === "number" ? (
               <CountUp end={value} duration={1.5} />
             ) : (
               value
             )}
-
           </h2>
 
           <div className="mt-3 flex items-center gap-2">
 
             {trend === "up" ? (
-              <ArrowUpRight className="text-emerald-400" size={18} />
+              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-400/10">
+                <ArrowUpRight
+                  className="text-emerald-300"
+                  size={16}
+                />
+              </span>
             ) : (
-              <ArrowDownRight className="text-red-400" size={18} />
+              <span className="flex h-6 w-6 items-center justify-center rounded-md bg-rose-400/10">
+                <ArrowDownRight
+                  className="text-rose-300"
+                  size={16}
+                />
+              </span>
             )}
 
             <span className="text-sm text-slate-400">
@@ -50,17 +76,25 @@ export default function StatCard({
             </span>
 
           </div>
-
         </div>
 
         <div
-          className={`rounded-2xl p-4 ${color}`}
+          className={`
+            rounded-2xl
+            border border-white/5
+            p-4
+            transition-all duration-300
+            group-hover:scale-105
+            ${color}
+          `}
         >
-          <Icon size={32} className="text-white" />
+          <Icon
+            size={32}
+            className="text-white"
+          />
         </div>
 
       </div>
-
     </div>
   );
 }

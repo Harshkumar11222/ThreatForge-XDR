@@ -7,6 +7,6 @@ export interface Scan {
 }
 
 export const getScans = async (): Promise<Scan[]> => {
-  const response = await api.get("/scans");
+  const response = await api.get("/scans/");
   return response.data;
 };

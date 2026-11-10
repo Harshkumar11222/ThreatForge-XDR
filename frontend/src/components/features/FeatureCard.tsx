@@ -13,25 +13,63 @@ export default function FeatureCard({
   description,
 }: FeatureCardProps) {
   return (
-    <div className="group rounded-3xl border border-slate-800 bg-[#111827]/80 p-8  transition-all duration-300 hover:-translate-y-2 hover:border-cyan-500 hover:shadow-xl hover:shadow-cyan-500/10">
-
-      <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400 transition-all duration-300 group-hover:bg-cyan-500 group-hover:text-white">
+    <div
+      className="
+        group rounded-3xl
+        border border-cyan-300/10
+        bg-[#113333]
+        p-8
+        transition-all duration-300
+        hover:-translate-y-2
+        hover:border-teal-300/30
+        hover:bg-[#123a38]
+        hover:shadow-xl
+        hover:shadow-teal-400/10
+      "
+    >
+      {/* Icon */}
+      <div
+        className="
+          mb-6 flex h-14 w-14 items-center justify-center
+          rounded-2xl
+          border border-teal-300/10
+          bg-teal-400/10
+          text-teal-300
+          transition-all duration-300
+          group-hover:border-teal-300/20
+          group-hover:bg-teal-400
+          group-hover:text-[#062222]
+          group-hover:shadow-lg
+          group-hover:shadow-teal-400/20
+        "
+      >
         <Icon size={28} />
       </div>
 
-      <h3 className="text-2xl font-semibold text-white">
+      {/* Title */}
+      <h3 className="text-2xl font-semibold text-white transition-colors group-hover:text-teal-100">
         {title}
       </h3>
 
+      {/* Description */}
       <p className="mt-4 leading-7 text-slate-400">
         {description}
       </p>
 
-      <button className="mt-8 flex items-center gap-2 text-cyan-400 transition-all group-hover:gap-3">
+      {/* Learn More */}
+      <button
+        type="button"
+        className="
+          mt-8 flex items-center gap-2
+          font-medium text-teal-300
+          transition-all duration-300
+          group-hover:gap-3
+          group-hover:text-teal-200
+        "
+      >
         Learn More
         <ArrowRight size={18} />
       </button>
-
     </div>
   );
 }

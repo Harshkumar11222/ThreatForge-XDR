@@ -1,72 +1,14 @@
+import { ArrowLeft, KeyRound, ShieldAlert } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Mail, ArrowLeft } from "lucide-react";
 
 export default function ForgotPassword() {
-  return (
-    <div className="min-h-screen bg-[#030712] flex items-center justify-center px-6">
-
-      <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/80 backdrop-blur-xl p-8 shadow-2xl">
-
-        {/* Heading */}
-
-        <h1 className="text-3xl font-bold text-white">
-          Forgot Password
-        </h1>
-
-        <p className="mt-3 text-slate-400 leading-7">
-          Enter your registered email address and we'll send you a password reset link.
-        </p>
-
-        {/* Form */}
-
-        <form className="mt-8 space-y-6">
-
-          <div>
-            <label className="text-sm text-slate-300">
-              Email Address
-            </label>
-
-            <div className="relative mt-2">
-
-              <Mail
-                size={20}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500"
-              />
-
-              <input
-                type="email"
-                placeholder="you@example.com"
-                className="w-full rounded-xl border border-slate-700 bg-[#111827] py-3 pl-12 pr-4 text-white outline-none transition focus:border-cyan-400"
-              />
-
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full rounded-xl bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-500"
-          >
-            Send Reset Link
-          </button>
-
-        </form>
-
-        {/* Bottom */}
-
-        <div className="mt-8 text-center">
-
-          <Link
-            to="/login"
-            className="inline-flex items-center gap-2 text-cyan-400 hover:text-cyan-300 transition"
-          >
-            <ArrowLeft size={18} />
-            Back to Login
-          </Link>
-
-        </div>
-
-      </div>
-
-    </div>
-  );
+  return <div className="tf-auth-shell !grid-cols-1">
+    <section className="tf-auth-card mx-auto max-w-lg">
+      <span className="tf-feature-icon"><KeyRound size={19}/></span>
+      <h1 className="mt-6 text-2xl font-extrabold text-white">Password recovery</h1>
+      <p className="mt-3 text-xs leading-7 text-slate-400">Password-reset delivery is not connected in the current backend build. Contact the project administrator to reset the account password.</p>
+      <div className="mt-5 flex gap-3 rounded-xl border border-amber-300/15 bg-amber-300/[.04] p-4"><ShieldAlert size={16} className="mt-0.5 flex-none text-amber-200"/><p className="text-[10px] leading-5 text-slate-400">No reset email has been sent. This page is informational until a password-reset endpoint is implemented.</p></div>
+      <Link to="/login" className="tf-button-secondary mt-7 w-full"><ArrowLeft size={14}/> Back to sign in</Link>
+    </section>
+  </div>;
 }

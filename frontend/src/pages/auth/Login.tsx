@@ -1,205 +1,47 @@
-import { Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
 import { useState } from "react";
+import { Eye, EyeOff, Fingerprint, LockKeyhole, ShieldCheck } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginSchema } from "../../utils/validators";
-import type { LoginSchema } from "../../utils/validators";
-import { login } from "../../services/auth";
-//import { useAuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { loginSchema, type LoginSchema } from "../../utils/validators";
+import { login } from "../../services/auth";
 
 export default function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  //const { loginUser } = useAuthContext();
-  const {
-  register,
-  handleSubmit,
-  formState: { errors },
-  
-} = useForm<LoginSchema>({
-  resolver: zodResolver(loginSchema),
-});
-  return (
-    <div className="min-h-screen bg-[#030712] flex items-center justify-center px-6">
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginSchema>({ resolver: zodResolver(loginSchema) });
 
-      <div className="w-full max-w-md rounded-3xl border border-slate-800 bg-slate-900/80 backdrop-blur-xl p-8">
+  return <div className="tf-auth-shell">
+    <aside className="tf-auth-aside">
+      <Link to="/" className="inline-flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-xl border border-cyan-300/25 bg-cyan-300/10 text-cyan-100"><ShieldCheck size={23}/></span><span><b className="block text-sm tracking-[.14em] text-white">THREATFORGE</b><small className="mt-1 block text-[9px] font-extrabold tracking-[.28em] text-cyan-300">XDR CONSOLE</small></span></Link>
+      <p className="tf-eyebrow mt-16">Security operations workspace</p>
+      <h1 className="mt-4 max-w-xl text-4xl font-extrabold leading-tight tracking-[-.05em] text-white sm:text-5xl">Your security picture,<br/><span className="text-cyan-300">in one place.</span></h1>
+      <p className="mt-6 max-w-lg text-sm leading-8 text-slate-400">Sign in to review security alerts, inspect file uploads and explore the current ThreatForge detection workflow.</p>
+      <div className="mt-10 grid max-w-lg grid-cols-3 gap-3">{[{icon:Fingerprint,label:"SHA-256"},{icon:ShieldCheck,label:"ClamAV"},{icon:LockKeyhole,label:"YARA rules"}].map(({icon:Icon,label})=><div key={label} className="rounded-xl border border-slate-700/60 bg-slate-900/40 p-3"><Icon size={17} className="text-cyan-200"/><p className="mt-3 text-[10px] font-extrabold text-slate-300">{label}</p></div>)}</div>
+      <p className="mt-16 text-[10px] text-slate-600">DETECT · INVESTIGATE · RESPOND</p>
+    </aside>
 
-        <h1 className="text-3xl font-bold text-white">
-          Welcome Back
-        </h1>
-
-        <p className="mt-2 text-slate-400">
-          Login to your ThreatForge account
-        </p>
-
-        <form
-  className="mt-8 space-y-5"
-  onSubmit={handleSubmit(async (data) => {
-  try {
-
-    setLoading(true);
-
-    const response = await login(data);
-
-    console.log("========== LOGIN ==========");
-    console.log(response);
-    console.log("ACCESS TOKEN:", response.access_token);
-
-    localStorage.setItem("token", response.access_token);
-    localStorage.setItem("user", JSON.stringify(response.user));
-
-    console.log("SAVED TOKEN:", localStorage.getItem("token"));
-    console.log("===========================");
-
-    toast.success("Login Successful");
-
-    navigate("/dashboard");
-
-  } catch (error: any) {
-
-    console.error(error);
-
-    toast.error(
-      error?.response?.data?.detail ||
-      "Login Failed"
-    );
-
-  } finally {
-
-    setLoading(false);
-
-  }
-})}
->
-
-          <div>
-            <label className="text-slate-300 text-sm">
-              Email
-            </label>
-
-            <input
-              {...register("email")}
-              type="email"
-              placeholder="you@example.com"
-              className="mt-2 w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 text-white outline-none focus:border-cyan-400"
-            />
-            {errors.email && (
-  <p className="mt-2 text-sm text-red-400">
-    {errors.email.message}
-  </p>
-)}
-
-          </div>
-
-          <div>
-  <label className="text-sm text-slate-300">
-    Password
-  </label>
-
-  <div className="relative mt-2">
-
-    <input
-      {...register("password")}
-      type={showPassword ? "text" : "password"}
-      placeholder="********"
-      className="w-full rounded-xl border border-slate-700 bg-[#111827] px-4 py-3 pr-12 text-white outline-none focus:border-cyan-400"
-    />
-    {errors.password && (
-  <p className="mt-2 text-sm text-red-400">
-    {errors.password.message}
-  </p>
-)}
-
-    <button
-      type="button"
-      onClick={() => setShowPassword(!showPassword)}
-      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-cyan-400"
-    >
-      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-    </button>
-
-  </div>
-</div>
-
-          <div className="flex items-center justify-between">
-
-  <label className="flex items-center gap-2 text-sm text-slate-400">
-
-    <input
-      type="checkbox"
-      className="accent-cyan-500"
-    />
-
-    Remember Me
-
-  </label>
-
-  <Link
-    to="/forgot-password"
-    className="text-sm text-cyan-400 hover:underline"
-  >
-    Forgot Password?
-  </Link>
-
-</div>
-
-          <button
-  type="submit"
-  disabled={loading}
-  className="w-full rounded-xl bg-blue-600 py-3 font-semibold text-white transition hover:bg-blue-500 disabled:opacity-50"
->
-  {loading ? "Signing In..." : "Login"}
-</button>
-
-          <div className="my-6 flex items-center">
-
-  <div className="h-px flex-1 bg-slate-700" />
-
-  <span className="px-4 text-sm text-slate-500">
-    OR
-  </span>
-
-  <div className="h-px flex-1 bg-slate-700" />
-
-</div>
-
-
-<div className="grid gap-3">
-
-  <button
-    type="button"
-    className="rounded-xl border border-slate-700 py-3 text-white hover:border-cyan-400 transition"
-  >
-    Continue with Google
-  </button>
-
-  <button
-    type="button"
-    className="rounded-xl border border-slate-700 py-3 text-white hover:border-cyan-400 transition"
-  >
-    Continue with GitHub
-  </button>
-
-</div>
-
-        </form>
-
-        <p className="mt-8 text-center text-slate-400">
-          Don't have an account?{" "}
-          <Link
-            to="/register"
-            className="text-cyan-400 hover:underline"
-          >
-            Register
-          </Link>
-        </p>
-
-      </div>
-
-    </div>
-  );
+    <section className="tf-auth-card">
+      <div className="mb-8"><span className="tf-chip"><span className="tf-status-dot"/> AUTHENTICATED WORKSPACE</span><h2 className="mt-5 text-2xl font-extrabold tracking-tight text-white">Welcome back</h2><p className="mt-2 text-xs leading-6 text-slate-400">Enter your account details to continue to the console.</p></div>
+      <form className="space-y-5" onSubmit={handleSubmit(async (data) => {
+        try {
+          setLoading(true);
+          const response = await login(data);
+          localStorage.setItem("token", response.access_token);
+          localStorage.setItem("user", JSON.stringify(response.user));
+          toast.success("Signed in successfully.");
+          navigate("/dashboard");
+        } catch (error: any) {
+          toast.error(error?.response?.data?.detail || "Sign-in failed. Check your credentials and API connection.");
+        } finally { setLoading(false); }
+      })}>
+        <div><label className="mb-2 block text-[11px] font-bold text-slate-300">Email address</label><input {...register("email")} type="email" autoComplete="email" placeholder="you@company.com" className="tf-input"/>{errors.email && <p className="mt-1.5 text-[10px] text-rose-300">{errors.email.message}</p>}</div>
+        <div><div className="mb-2 flex items-center justify-between"><label className="text-[11px] font-bold text-slate-300">Password</label><Link to="/forgot-password" className="text-[10px] font-bold text-cyan-300 hover:text-white">Forgot password?</Link></div><div className="relative"><input {...register("password")} type={showPassword ? "text" : "password"} autoComplete="current-password" placeholder="Enter your password" className="tf-input !pr-12"/><button type="button" onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-cyan-200" aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <EyeOff size={17}/> : <Eye size={17}/>}</button></div>{errors.password && <p className="mt-1.5 text-[10px] text-rose-300">{errors.password.message}</p>}</div>
+        <button type="submit" disabled={loading} className="tf-button w-full !min-h-[48px]">{loading ? "Signing in…" : "Sign in to console"}</button>
+      </form>
+      <div className="mt-7 border-t border-slate-700/50 pt-6 text-center"><p className="text-xs text-slate-500">New to ThreatForge? <Link to="/register" className="font-extrabold text-cyan-300 hover:text-white">Create an account</Link></p><Link to="/" className="mt-5 inline-block text-[10px] font-bold text-slate-600 hover:text-slate-300">← Back to platform</Link></div>
+    </section>
+  </div>;
 }

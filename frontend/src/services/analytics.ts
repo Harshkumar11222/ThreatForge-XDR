@@ -14,13 +14,13 @@ export interface TopIP{
     attacks:number;
 }
 
-export const getTopIPs=async()=>{
-   const res=await api.get("/analytics/top-ips");
-   return res.data;
+export const getTopIPs = async (): Promise<TopIP[]> => {
+  const response = await api.get<TopIP[]>("/analytics/top-ips");
+  return response.data;
 }
 
 export const getAnalytics = async (): Promise<AnalyticsData> => {
-  const response = await api.get("/analytics");
+  const response = await api.get("/analytics/");
   return response.data;
 };
 

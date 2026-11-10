@@ -1,117 +1,58 @@
-import { useState } from "react";
-import {
-  Search,
-  Bell,
-  UserCircle,
-} from "lucide-react";
-
+import { useMemo, useState } from "react";
+import { Bell, Menu, Shield, ChevronRight } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import NotificationDropdown from "./NotificationDropdown";
 import { useNotifications } from "../../hooks/useNotifications";
 
-export default function Topbar() {
-  const [open, setOpen] = useState(false);
+const routeNames: Record<string, string> = {
+  "/dashboard": "Overview",
+  "/scanner": "File scanner",
+  "/alerts": "Security alerts",
+  "/analytics": "Analytics",
+  "/reports": "Reports",
+  "/settings": "Settings",
+};
 
+interface TopbarProps {
+  onMenuClick: () => void;
+}
+
+export default function Topbar({ onMenuClick }: TopbarProps) {
+  const [open, setOpen] = useState(false);
   const { notifications } = useNotifications();
+  const { pathname } = useLocation();
+  const title = routeNames[pathname] || "Security workspace";
+  const dateLabel = useMemo(
+    () => new Intl.DateTimeFormat(undefined, { weekday: "short", day: "2-digit", month: "short", year: "numeric" }).format(new Date()),
+    [],
+  );
 
   return (
-  <div className="mb-8 flex items-center justify-between">
-
-    {/* Left */}
-
-    <div>
-      <h1 className="text-3xl font-bold text-white">
-        ThreatForge XDR
-      </h1>
-
-      <p className="mt-1 text-slate-400">
-        Welcome back, Harsh 👋
-      </p>
-    </div>
-
-    {/* Right */}
-
-    <div className="flex items-center gap-4">
-
-      {/* Search */}
-
-      <div className="relative">
-
-        <Search
-          size={18}
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-        />
-
-        <input
-          type="text"
-          placeholder="Search alerts, IPs, users..."
-          className="w-72 rounded-2xl border border-slate-700 bg-slate-900 py-3 pl-11 pr-4 text-white outline-none transition-all duration-300 placeholder:text-slate-500 focus:border-cyan-400 focus:ring-2 focus:ring-cyan-500/20"
-        />
-
-      </div>
-
-      {/* Notification */}
-
-      <div className="relative">
-
-        <button
-          onClick={() => setOpen(!open)}
-          className="relative rounded-2xl border border-slate-700 bg-slate-900 p-3 transition-all duration-300 hover:-translate-y-1 hover:border-cyan-500 hover:shadow-lg hover:shadow-cyan-500/20"
-        >
-
-          <Bell
-            size={22}
-            className="text-white"
-          />
-
-          {notifications.length > 0 && (
-
-            <span className="absolute -right-1 -top-1 flex h-5 w-5 animate-pulse items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
-
-              {notifications.length}
-
-            </span>
-
-          )}
-
-        </button>
-
-        {open && (
-          <div className="absolute right-0 mt-3 z-50">
-            <NotificationDropdown />
-          </div>
-        )}
-
-      </div>
-
-      {/* Status */}
-
-      <div className="hidden rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 lg:flex lg:items-center lg:gap-2">
-
-        <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400"></span>
-
-        <span className="text-sm font-medium text-emerald-400">
-          System Protected
-        </span>
-
-      </div>
-
-      {/* Profile */}
-
-      <button className="transition-transform duration-300 hover:scale-105">
-
-        <div className="rounded-full border-2 border-cyan-500 bg-cyan-500 p-1">
-
-          <UserCircle
-            size={42}
-            className="text-slate-900"
-          />
-
-        </div>
-
+    <header className="tf-topbar sticky top-0 z-30 flex min-h-[76px] items-center gap-4 px-4 sm:px-6 lg:px-8">
+      <button onClick={onMenuClick} aria-label="Open navigation" className="rounded-xl border border-slate-700/70 bg-slate-900/70 p-2.5 text-slate-300 hover:border-cyan-300/30 hover:text-cyan-100 lg:hidden">
+        <Menu size={18} />
       </button>
-
-    </div>
-
-  </div>
-);
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[.16em] text-slate-600">
+          <span>ThreatForge XDR</span><ChevronRight size={12} /><span className="text-cyan-300">{title}</span>
+        </div>
+        <div className="mt-1 truncate text-sm font-extrabold text-slate-100 sm:text-base">{title}</div>
+      </div>
+      <div className="hidden items-center gap-2 rounded-xl border border-slate-700/60 bg-slate-900/50 px-3 py-2 sm:flex">
+        <Shield size={14} className="text-cyan-300" />
+        <span className="text-[10px] font-bold text-slate-400">Local security console</span>
+      </div>
+      <div className="hidden text-right md:block">
+        <div className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500">Workspace date</div>
+        <div className="mt-1 text-xs font-bold text-slate-300">{dateLabel}</div>
+      </div>
+      <div className="relative">
+        <button onClick={() => setOpen((value) => !value)} aria-label="Notifications" className="relative rounded-xl border border-slate-700/70 bg-slate-900/65 p-2.5 text-slate-300 transition hover:border-cyan-300/30 hover:text-cyan-100">
+          <Bell size={17} />
+          {notifications.length > 0 && <span className="absolute -right-1 -top-1 grid h-[17px] min-w-[17px] place-items-center rounded-full border border-[#0b1422] bg-rose-500 px-1 text-[9px] font-extrabold text-white">{notifications.length}</span>}
+        </button>
+        {open && <NotificationDropdown />}
+      </div>
+    </header>
+  );
 }

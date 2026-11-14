@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "react-hot-toast";
 import "./index.css";
 import "./App.css";
@@ -7,8 +8,10 @@ import App from "./App";
 import { AuthProvider } from "./context/AuthContext";
 import { NotificationProvider } from "./context/NotificationProvider";
 
-createRoot(document.getElementById("root")!).render(
-  <StrictMode>
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
+function RootApp() {
+  return (
     <AuthProvider>
       <NotificationProvider>
         <App />
@@ -25,5 +28,17 @@ createRoot(document.getElementById("root")!).render(
         />
       </NotificationProvider>
     </AuthProvider>
+  );
+}
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    {googleClientId ? (
+      <GoogleOAuthProvider clientId={googleClientId}>
+        <RootApp />
+      </GoogleOAuthProvider>
+    ) : (
+      <RootApp />
+    )}
   </StrictMode>,
 );

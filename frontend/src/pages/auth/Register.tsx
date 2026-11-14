@@ -6,9 +6,33 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 import { registerSchema, type RegisterSchema } from "../../utils/validators";
 import { registerUser } from "../../services/auth";
+import { GoogleLogin } from "@react-oauth/google";
+import { googleLogin } from "../../services/auth";
+import { useAuthContext } from "../../context/AuthContext";
 
 export default function Register() {
   const navigate = useNavigate();
+  const { loginUser } = useAuthContext();
+
+const handleGoogleSuccess = async (credential: string) => {
+  try {
+    setLoading(true);
+
+    const response = await googleLogin(credential);
+
+    localStorage.setItem("token", response.access_token);
+    loginUser(response.user);
+
+    toast.success("Google account authenticated successfully.");
+    navigate("/dashboard");
+  } catch (error: any) {
+    toast.error(
+      error?.response?.data?.detail || "Google signup failed."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -41,6 +65,35 @@ export default function Register() {
         <div><label className="mb-2 block text-[11px] font-bold text-slate-300">Confirm password</label><div className="relative"><input {...register("confirmPassword")} type={showConfirmPassword ? "text" : "password"} autoComplete="new-password" placeholder="Repeat your password" className="tf-input !pr-12"/><button type="button" onClick={() => setShowConfirmPassword((value) => !value)} aria-label="Toggle confirmation visibility" className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-cyan-200">{showConfirmPassword ? <EyeOff size={17}/> : <Eye size={17}/>}</button></div>{errors.confirmPassword && <p className="mt-1.5 text-[10px] text-rose-300">{errors.confirmPassword.message}</p>}</div>
         <button type="submit" disabled={loading} className="tf-button mt-2 w-full !min-h-[48px]">{loading ? "Creating account…" : "Create account"}</button>
       </form>
+      {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+  <div className="mt-5">
+    <div className="mb-4 flex items-center gap-3">
+      <div className="h-px flex-1 bg-slate-700" />
+      <span className="text-[10px] font-bold text-slate-500">
+        OR SIGN UP WITH
+      </span>
+      <div className="h-px flex-1 bg-slate-700" />
+    </div>
+
+    <div className="flex justify-center">
+      <GoogleLogin
+        onSuccess={(response) => {
+          if (response.credential) {
+            void handleGoogleSuccess(response.credential);
+          } else {
+            toast.error("Google did not return a valid credential.");
+          }
+        }}
+        onError={() => toast.error("Google signup was unsuccessful.")}
+        theme="outline"
+        size="large"
+        shape="rectangular"
+        text="signup_with"
+        width="320"
+      />
+    </div>
+  </div>
+)}
       <div className="mt-6 border-t border-slate-700/50 pt-5 text-center"><p className="text-xs text-slate-500">Already registered? <Link to="/login" className="font-extrabold text-cyan-300 hover:text-white">Sign in</Link></p></div>
     </section>
   </div>;

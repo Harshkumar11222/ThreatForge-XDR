@@ -7,6 +7,7 @@ from uuid import uuid4
 
 from fastapi import (
     APIRouter,
+    BackgroundTasks,
     Depends,
     HTTPException,
     Query,
@@ -14,7 +15,7 @@ from fastapi import (
 )
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
-
+from app.services.upload_scan_service import process_upload_job
 from app.database import get_db
 from app.core.dependencies import get_current_user
 from app.models.upload_scan import UploadJob, UploadScanFile
@@ -387,7 +388,66 @@ async def upload_file_chunk(
         finally:
             temp_path.unlink(missing_ok=True)
 
+@router.get("/history")
+def get_upload_history(
+    current_user: str = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    jobs = (
+        db.query(UploadJob)
+        .filter(UploadJob.owner_email == current_user)
+        .order_by(UploadJob.created_at.desc())
+        .limit(50)
+        .all()
+    )
 
+    if not jobs:
+        return []
+
+    job_ids = [job.id for job in jobs]
+
+    files = (
+        db.query(UploadScanFile)
+        .filter(UploadScanFile.job_id.in_(job_ids))
+        .order_by(UploadScanFile.created_at.desc())
+        .all()
+    )
+
+    files_by_job = {}
+
+    for item in files:
+        files_by_job.setdefault(item.job_id, []).append({
+            "file_id": item.id,
+            "relative_path": item.relative_path,
+            "size_bytes": item.size_bytes,
+            "status": item.status,
+            "sha256": item.sha256,
+            "clamav_result": item.clamav_result,
+            "yara_status": item.yara_status,
+            "yara_matches": item.yara_matches,
+            "threat_name": item.threat_name,
+            "severity": item.severity,
+            "error_message": item.error_message,
+            "scanned_at": item.scanned_at,
+        })
+
+    return [
+        {
+            "job_id": job.id,
+            "status": job.status,
+            "total_files": job.total_files,
+            "scanned_files": job.scanned_files,
+            "clean_files": job.clean_files,
+            "suspicious_files": job.suspicious_files,
+            "malicious_files": job.malicious_files,
+            "error_files": job.error_files,
+            "total_bytes": job.total_bytes,
+            "created_at": job.created_at,
+            "updated_at": job.updated_at,
+            "files": files_by_job.get(job.id, []),
+        }
+        for job in jobs
+    ]
 @router.get("/{job_id}")
 def get_upload_status(
     job_id: str,
@@ -433,6 +493,7 @@ def get_upload_status(
 @router.post("/{job_id}/finalize")
 def finalize_upload(
     job_id: str,
+    background_tasks: BackgroundTasks,
     current_user: str = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -469,13 +530,17 @@ def finalize_upload(
             },
         )
 
-    job.status = "uploaded"
+    # Mark job as scanning before starting the worker.
+    job.status = "scanning"
     db.commit()
+
+    # Start malware scanning in the background.
+    background_tasks.add_task(process_upload_job, job_id)
 
     return {
         "job_id": job_id,
-        "status": "uploaded",
+        "status": "scanning",
         "total_files": job.total_files,
         "total_bytes": job.total_bytes,
-        "message": "Upload completed. Files are ready for scanning.",
+        "message": "Upload completed. Malware scanning has started.",
     }

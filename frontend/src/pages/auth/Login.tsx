@@ -6,9 +6,33 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import toast from "react-hot-toast";
 import { loginSchema, type LoginSchema } from "../../utils/validators";
 import { login } from "../../services/auth";
+import { GoogleLogin } from "@react-oauth/google";
+import { googleLogin } from "../../services/auth";
+import { useAuthContext } from "../../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { loginUser } = useAuthContext();
+
+const handleGoogleSuccess = async (credential: string) => {
+  try {
+    setLoading(true);
+
+    const response = await googleLogin(credential);
+
+    localStorage.setItem("token", response.access_token);
+    loginUser(response.user);
+
+    toast.success("Google sign-in successful.");
+    navigate("/dashboard");
+  } catch (error: any) {
+    toast.error(
+      error?.response?.data?.detail || "Google sign-in failed."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm<LoginSchema>({ resolver: zodResolver(loginSchema) });
@@ -30,7 +54,7 @@ export default function Login() {
           setLoading(true);
           const response = await login(data);
           localStorage.setItem("token", response.access_token);
-          localStorage.setItem("user", JSON.stringify(response.user));
+          loginUser(response.user);
           toast.success("Signed in successfully.");
           navigate("/dashboard");
         } catch (error: any) {
@@ -41,6 +65,35 @@ export default function Login() {
         <div><div className="mb-2 flex items-center justify-between"><label className="text-[11px] font-bold text-slate-300">Password</label><Link to="/forgot-password" className="text-[10px] font-bold text-cyan-300 hover:text-white">Forgot password?</Link></div><div className="relative"><input {...register("password")} type={showPassword ? "text" : "password"} autoComplete="current-password" placeholder="Enter your password" className="tf-input !pr-12"/><button type="button" onClick={() => setShowPassword((value) => !value)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-500 hover:text-cyan-200" aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <EyeOff size={17}/> : <Eye size={17}/>}</button></div>{errors.password && <p className="mt-1.5 text-[10px] text-rose-300">{errors.password.message}</p>}</div>
         <button type="submit" disabled={loading} className="tf-button w-full !min-h-[48px]">{loading ? "Signing in…" : "Sign in to console"}</button>
       </form>
+      {import.meta.env.VITE_GOOGLE_CLIENT_ID && (
+  <div className="mt-5">
+    <div className="mb-4 flex items-center gap-3">
+      <div className="h-px flex-1 bg-slate-700" />
+      <span className="text-[10px] font-bold text-slate-500">
+        OR CONTINUE WITH
+      </span>
+      <div className="h-px flex-1 bg-slate-700" />
+    </div>
+
+    <div className="flex justify-center">
+      <GoogleLogin
+        onSuccess={(response) => {
+          if (response.credential) {
+            void handleGoogleSuccess(response.credential);
+          } else {
+            toast.error("Google did not return a valid credential.");
+          }
+        }}
+        onError={() => toast.error("Google sign-in was unsuccessful.")}
+        theme="outline"
+        size="large"
+        shape="rectangular"
+        text="signin_with"
+        width="320"
+      />
+    </div>
+  </div>
+)}
       <div className="mt-7 border-t border-slate-700/50 pt-6 text-center"><p className="text-xs text-slate-500">New to ThreatForge? <Link to="/register" className="font-extrabold text-cyan-300 hover:text-white">Create an account</Link></p><Link to="/" className="mt-5 inline-block text-[10px] font-bold text-slate-600 hover:text-slate-300">← Back to platform</Link></div>
     </section>
   </div>;
